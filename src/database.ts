@@ -6,4 +6,5 @@ export const knex = setupKnex({
   connection: {
     filename: './tmp/app.db',
   },
+  useNullAsDefault: true,
 })
