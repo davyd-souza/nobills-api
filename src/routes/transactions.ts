@@ -26,4 +26,16 @@ export async function transactionsRoute(app: FastifyInstance) {
 
     return reply.status(201).send()
   })
+
+  app.delete('/:id', async (req, reply) => {
+    const deleteTransactionParamsSchema = z.object({
+      id: z.string(),
+    })
+
+    const { id } = deleteTransactionParamsSchema.parse(req.params)
+
+    await knex('transactions').where('id', id).delete()
+
+    return reply.status(204).send()
+  })
 }
