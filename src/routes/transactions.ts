@@ -7,7 +7,7 @@ export async function transactionsRoute(app: FastifyInstance) {
   app.get('/', async () => {
     const transactions = await knex('transactions').select('*')
 
-    return transactions
+    return { transactions }
   })
 
   app.post('/', async (req, reply) => {
