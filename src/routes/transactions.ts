@@ -100,6 +100,44 @@ export async function transactionsRoute(app: FastifyInstance) {
     },
   )
 
+  app.put(
+    '/:id',
+    { preHandler: [checkSessionIdExists] },
+    async (req, reply) => {
+      const updateTransactionParamsSchema = z.object({
+        id: z.string(),
+      })
+
+      const updateTransactionBodySchema = z.object({
+        title: z.string(),
+        amount: z.number(),
+        type: z.enum(['income', 'outcome']),
+      })
+
+      const { id } = updateTransactionParamsSchema.parse(req.params)
+      const { title, amount, type } = updateTransactionBodySchema.parse(
+        req.body,
+      )
+      const { sessionId } = req.cookies
+
+      const transaction = await knex('transactions')
+        .where({ session_id: sessionId, id })
+        .update({
+          title,
+          amount: type === 'income' ? amount : amount * -1,
+          updated_at: new Date().toISOString(),
+        })
+
+      if (!transaction) {
+        return reply.status(401).send({
+          error: 'Unauthorized to edit transaction.',
+        })
+      }
+
+      return reply.status(204).send()
+    },
+  )
+
   app.get('/summary', { preHandler: [checkSessionIdExists] }, async (req) => {
     const { sessionId } = req.cookies
 
