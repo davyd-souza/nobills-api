@@ -10,6 +10,18 @@ export async function transactionsRoute(app: FastifyInstance) {
     return { transactions }
   })
 
+  app.get('/:id', async (req) => {
+    const getTransactionParamsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = getTransactionParamsSchema.parse(req.params)
+
+    const transaction = await knex('transactions').where('id', id).first()
+
+    return transaction
+  })
+
   app.post('/', async (req, reply) => {
     const createTransactionBodySchema = z.object({
       title: z.string(),
@@ -29,7 +41,7 @@ export async function transactionsRoute(app: FastifyInstance) {
 
   app.delete('/:id', async (req, reply) => {
     const deleteTransactionParamsSchema = z.object({
-      id: z.string(),
+      id: z.string().uuid(),
     })
 
     const { id } = deleteTransactionParamsSchema.parse(req.params)
