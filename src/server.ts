@@ -1,11 +1,14 @@
 // DEPENDENCY
 import fastify from 'fastify'
 import { env } from '@/env'
+import cookie from '@fastify/cookie'
 
 // ROUTE
-import { transactionsRoute } from './routes/transactions'
+import { transactionsRoute } from '@/routes/transactions'
 
 const app = fastify()
+
+app.register(cookie)
 
 app.register(transactionsRoute, { prefix: 'transactions' })
 
