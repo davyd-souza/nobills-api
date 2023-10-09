@@ -82,4 +82,31 @@ describe('Transactions routes', () => {
       }),
     )
   })
+
+  it('should be able to list transactions summary', async () => {
+    const createIncomeTransactionResponse = await request(app.server)
+      .post('/transactions')
+      .send({
+        title: 'Income transaction',
+        amount: 3000,
+        type: 'income',
+      })
+
+    const cookie = createIncomeTransactionResponse.get('Set-Cookie')
+
+    await request(app.server).post('/transactions').set('Cookie', cookie).send({
+      title: 'Outcome transaction',
+      amount: 1000,
+      type: 'outcome',
+    })
+
+    const summaryTransactionsResponse = await request(app.server)
+      .get('/transactions/summary')
+      .set('Cookie', cookie)
+      .expect(200)
+
+    expect(summaryTransactionsResponse.body.summary).toEqual({
+      amount: 2000,
+    })
+  })
 })
