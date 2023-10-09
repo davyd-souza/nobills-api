@@ -1,4 +1,4 @@
 // DEPENDENCy
-import { config } from '@/database'
+import { config } from './src/database'
 
 export default config
