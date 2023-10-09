@@ -132,4 +132,32 @@ describe('Transactions routes', () => {
       .set('Cookie', cookie)
       .expect(204)
   })
+
+  it('should be able to update a transaction', async () => {
+    const createTransactionResponse = await request(app.server)
+      .post('/transactions')
+      .send({
+        title: 'New transaction',
+        amount: 3000,
+        type: 'income',
+      })
+
+    const cookie = createTransactionResponse.get('Set-Cookie')
+
+    const listAllTransactionsResponse = await request(app.server)
+      .get('/transactions')
+      .set('Cookie', cookie)
+
+    const transactionId = listAllTransactionsResponse.body.transactions[0].id
+
+    await request(app.server)
+      .put(`/transactions/${transactionId}`)
+      .send({
+        title: 'This is a new title',
+        amount: 3000,
+        type: 'income',
+      })
+      .set('Cookie', cookie)
+      .expect(204)
+  })
 })
